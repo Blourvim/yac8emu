@@ -13,4 +13,6 @@ https://www.youtube.com/watch?v=no0CkQk7id0
 Following this neat document
 http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 
+turns of the cow gods document contains mistakes which was not known at the time, the community has warned me
+
 
