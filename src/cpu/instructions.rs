@@ -59,8 +59,57 @@ impl Instruction {
 }
 pub fn parse_instruction(instruction: u16) -> Instruction {
     // let op_code:String = input
-    let operation: Operation = match instruction {
-        1 => Operation::Unknown,
+    //
+    //
+    let operation: Operation = match instruction & 0xF000 {
+        0x0000 => {
+            todo!("handle 0x0___")
+        }
+        0x1000 => {
+            todo!("handle 0x1___")
+        }
+        0x2000 => {
+            todo!("handle 0x2___")
+        }
+        0x3000 => {
+            todo!("handle 0x3___")
+        }
+        0x4000 => {
+            todo!("handle 0x4___")
+        }
+        0x5000 => {
+            todo!("handle 0x5___")
+        }
+        0x6000 => {
+            todo!("handle 0x6___")
+        }
+        0x7000 => {
+            todo!("handle 0x7___")
+        }
+        0x8000 => {
+            todo!("handle 0x8___")
+        }
+        0x9000 => {
+            todo!("handle 0x9___")
+        }
+        0xA000 => {
+            todo!("handle 0xA___")
+        }
+        0xB000 => {
+            todo!("handle 0xB___")
+        }
+        0xC000 => {
+            todo!("handle 0xC___")
+        }
+        0xD000 => {
+            todo!("handle 0xD___")
+        }
+        0xE000 => {
+            todo!("handle 0xE___")
+        }
+        0xF000 => {
+            todo!("handle 0xF___")
+        }
         _ => Operation::Unknown,
     };
 
