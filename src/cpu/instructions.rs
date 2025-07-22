@@ -57,10 +57,50 @@ impl Instruction {
         Self { opcode, operand }
     }
 }
+
+impl Instruction {
+    fn execute(&self) {
+        match self.opcode {
+            Operation::ClearScreen => todo!(),
+            Operation::Return => todo!(),
+            Operation::Jump { address } => todo!(),
+            Operation::Call { address } => todo!(),
+            Operation::SkipEqualByte { register, value } => todo!(),
+            Operation::SkipNotEqualByte { register, value } => todo!(),
+            Operation::SkipEqualReg { x, y } => todo!(),
+            Operation::LoadByte { register, value } => todo!(),
+            Operation::AddByte { register, value } => todo!(),
+            Operation::LoadReg { x, y } => todo!(),
+            Operation::Or { x, y } => todo!(),
+            Operation::And { x, y } => todo!(),
+            Operation::Xor { x, y } => todo!(),
+            Operation::AddReg { x, y } => todo!(),
+            Operation::SubReg { x, y } => todo!(),
+            Operation::ShiftRight { x, y } => todo!(),
+            Operation::SubN { x, y } => todo!(),
+            Operation::ShiftLeft { x, y } => todo!(),
+            Operation::SkipNotEqualReg { x, y } => todo!(),
+            Operation::LoadI { address } => todo!(),
+            Operation::JumpV0 { address } => todo!(),
+            Operation::Rand { register, mask } => todo!(),
+            Operation::Draw { x, y, height } => todo!(),
+            Operation::SkipKeyPressed { register } => todo!(),
+            Operation::SkipKeyNotPressed { register } => todo!(),
+            Operation::LoadDelayTimer { register } => todo!(),
+            Operation::WaitKey { register } => todo!(),
+            Operation::SetDelayTimer { register } => todo!(),
+            Operation::SetSoundTimer { register } => todo!(),
+            Operation::AddI { register } => todo!(),
+            Operation::LoadSprite { register } => todo!(),
+            Operation::Bcd { register } => todo!(),
+            Operation::StoreRegisters { x } => todo!(),
+            Operation::LoadRegisters { x } => todo!(),
+            Operation::Unknown => todo!(),
+        }
+    }
+}
 pub fn parse_instruction(instruction: u16) -> Instruction {
     // let op_code:String = input
-    //
-    //
     let operation: Operation = match instruction & 0xF000 {
         0x0000 => {
             todo!("handle 0x0___")
