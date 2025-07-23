@@ -1,6 +1,6 @@
 use std::io::ErrorKind;
 
-pub struct Components {
+pub struct Core {
     general_purpouse_registers: [u8; 16],
     program_counter: u16,
     stack_pointer: u8,
@@ -10,7 +10,7 @@ pub struct Components {
     ram: [u8; 4096],
 }
 
-impl Components {
+impl Core {
     pub fn copy_to_ram(
         mut self,
         data: Vec<u8>,

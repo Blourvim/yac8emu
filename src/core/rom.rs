@@ -1,12 +1,12 @@
 use core::panic;
 use std::fs;
 
-use super::components::Components;
+use super::core::Core;
 
 pub struct Rom {}
 
 impl Rom {
-    pub fn load(file_path: String, components: Components) -> Components {
+    pub fn load(file_path: String, components: Core) -> Core {
         println!("In file {file_path}");
 
         let contents: Vec<u8> = fs::read(file_path).expect("should be able to read the file");

@@ -1,13 +1,3 @@
-// pipeline
-// Read the file
-// split into instructions
-// each instruction then needs to be evaluated
-//
-//
-//
-//
-//
-//
 pub enum Operation {
     ClearScreen,
     Return,
