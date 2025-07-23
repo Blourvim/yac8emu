@@ -1,5 +1,4 @@
-pub mod cpu;
-pub mod rom;
+pub mod core;
 
 fn main() {
     println!("Hello, world!");
