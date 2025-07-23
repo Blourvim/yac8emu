@@ -1,4 +1,3 @@
 pub mod instructions;
-pub mod core;
+pub mod machine;
 pub mod rom;
-

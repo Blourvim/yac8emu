@@ -1,6 +1,6 @@
 use std::io::ErrorKind;
 
-pub struct Core {
+pub struct Machine {
     general_purpouse_registers: [u8; 16],
     program_counter: u16,
     stack_pointer: u8,
@@ -10,7 +10,7 @@ pub struct Core {
     ram: [u8; 4096],
 }
 
-impl Core {
+impl Machine {
     pub fn copy_to_ram(
         mut self,
         data: Vec<u8>,
@@ -41,5 +41,17 @@ impl Core {
             self.ram[usize::from(start_address) + i] = line
         }
         return Ok(self);
+    }
+
+    pub fn new() -> Self {
+        Self {
+            general_purpouse_registers: [0; 16],
+            program_counter: 0x200, // standard CHIP-8 program start
+            stack_pointer: 0,
+            index_register: 0,
+            sound_timer: 0,
+            delay_timer: 0,
+            ram: [0; 4096],
+        }
     }
 }
