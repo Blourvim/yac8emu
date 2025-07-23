@@ -5,6 +5,7 @@ pub struct Components {
     index_register: u16,
     sound_timer: u8,
     delay_timer: u8,
+    ram:[u8;4096]
 }
 
 impl Components {
