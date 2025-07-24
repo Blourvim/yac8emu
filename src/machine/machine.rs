@@ -35,13 +35,12 @@ impl Machine {
             ));
         }
 
-        //after validations
-
         for (i, line) in data.into_iter().enumerate() {
             self.ram[usize::from(start_address) + i] = line
         }
         return Ok(self);
     }
+
 
     pub fn new() -> Self {
         Self {
