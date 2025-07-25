@@ -1,7 +1,9 @@
 use std::{u16, u8};
 
+use super::machine::{self, Machine};
+
 #[rustfmt::skip]
-enum OpCodes {
+enum Operation {
 
     ///	Execute machine language subroutine at address NNN
     Op0nnnSys {address: u16}, 
@@ -76,56 +78,57 @@ enum OpCodes {
 }
 
 pub struct Instruction {
-    opcode: OpCodes,
-    operand: u16, // maybe write an u12 module, I don't want to use the crate but whatever, should
-                  // be fine for now
+    operation: Operation,
 }
 
 impl Instruction {
-    pub fn new(opcode: OpCodes, operand: u16) -> Self {
-        Self { opcode, operand }
+    pub fn new(opcode: Operation, operand: u16) -> Self {
+        Self { operation: opcode }
     }
 }
 
 #[rustfmt::skip]
 impl Instruction {
-    fn execute(&self) {
-        match self.opcode {
-            OpCodes::Op0nnnSys { address } => todo!(),
-            OpCodes::Op00e0Cls => todo!(),
-            OpCodes::Op00eeRet => todo!(),
-            OpCodes::Op1nnnJmp { address } => todo!(),
-            OpCodes::Op2nnnCall { address } => todo!(),
-            OpCodes::Op3xnnSe { register, value } => todo!(),
-            OpCodes::Op4xnnSne { register, value } => todo!(),
-            OpCodes::Op5xy0Se { register_x, register_y } => todo!(),
-            OpCodes::Op6xnnMov { register_x, number } => todo!(),
-            OpCodes::Op7xnnAdd { register_x, number } => todo!(),
-            OpCodes::Op8xy0Ymovx { register_x, register_y } => todo!(),
-            OpCodes::Op8xy1Setvx2vxorvy { register_x, register_y } => todo!(),
-            OpCodes::Op8xy2Setvx2vxandvy { register_x, register_y } => todo!(),
-            OpCodes::Op8xy3Setvx2vxxorvy { register_x, register_y } => todo!(),
-            OpCodes::Op8xy4Add { register_x, register_y } => todo!(),
-            OpCodes::Op8xy5Sub { register_x, register_y } => todo!(),
-            OpCodes::Op8xy6Shr { register_x } => todo!(),
-            OpCodes::Op8xy7Sub { register_x, register_y } => todo!(),
-            OpCodes::Op8xyeShl { register_x } => todo!(),
-            OpCodes::Op9xy0Sne { register_x, register_y } => todo!(),
-            OpCodes::OpAnnnMovI { address } => todo!(),
-            OpCodes::OpBnnnJmpPlusV0 { value_nnn } => todo!(),
-            OpCodes::OpCxnnMovRand { register_x, mask } => todo!(),
-            OpCodes::OpDxynDrw { register_x, register_y, height } => todo!(),
-            OpCodes::OpEx9eSkprs { register_x } => todo!(),
-            OpCodes::OpExa1Sknprs { register_x } => todo!(),
-            OpCodes::OpFx07MovDt { register_x } => todo!(),
-            OpCodes::OpFx0aWaitKey { register_x } => todo!(),
-            OpCodes::OpFx15SetDly { register_x } => todo!(),
-            OpCodes::OpFx18SetSt { register_x } => todo!(),
-            OpCodes::OpFx1eMovVi { register_x } => todo!(),
-            OpCodes::OpFx29 { register_x } => todo!(),
-            OpCodes::OpFx33 { register_x } => todo!(),
-            OpCodes::OpFx55 { register_x } => todo!(),
-            OpCodes::OpFx65 { register_x } => todo!(),
+    fn execute(&self,machine:Machine) ->Machine {
+        match self.operation {
+            Operation::Op0nnnSys { address } => todo!(),
+            Operation::Op00e0Cls => todo!(),
+            Operation::Op00eeRet => todo!(),
+            Operation::Op1nnnJmp { address } => {
+                machine.update_program_counter(address)
+
+            },
+            Operation::Op2nnnCall { address } => todo!(),
+            Operation::Op3xnnSe { register, value } => todo!(),
+            Operation::Op4xnnSne { register, value } => todo!(),
+            Operation::Op5xy0Se { register_x, register_y } => todo!(),
+            Operation::Op6xnnMov { register_x, number } => todo!(),
+            Operation::Op7xnnAdd { register_x, number } => todo!(),
+            Operation::Op8xy0Ymovx { register_x, register_y } => todo!(),
+            Operation::Op8xy1Setvx2vxorvy { register_x, register_y } => todo!(),
+            Operation::Op8xy2Setvx2vxandvy { register_x, register_y } => todo!(),
+            Operation::Op8xy3Setvx2vxxorvy { register_x, register_y } => todo!(),
+            Operation::Op8xy4Add { register_x, register_y } => todo!(),
+            Operation::Op8xy5Sub { register_x, register_y } => todo!(),
+            Operation::Op8xy6Shr { register_x } => todo!(),
+            Operation::Op8xy7Sub { register_x, register_y } => todo!(),
+            Operation::Op8xyeShl { register_x } => todo!(),
+            Operation::Op9xy0Sne { register_x, register_y } => todo!(),
+            Operation::OpAnnnMovI { address } => todo!(),
+            Operation::OpBnnnJmpPlusV0 { value_nnn } => todo!(),
+            Operation::OpCxnnMovRand { register_x, mask } => todo!(),
+            Operation::OpDxynDrw { register_x, register_y, height } => todo!(),
+            Operation::OpEx9eSkprs { register_x } => todo!(),
+            Operation::OpExa1Sknprs { register_x } => todo!(),
+            Operation::OpFx07MovDt { register_x } => todo!(),
+            Operation::OpFx0aWaitKey { register_x } => todo!(),
+            Operation::OpFx15SetDly { register_x } => todo!(),
+            Operation::OpFx18SetSt { register_x } => todo!(),
+            Operation::OpFx1eMovVi { register_x } => todo!(),
+            Operation::OpFx29 { register_x } => todo!(),
+            Operation::OpFx33 { register_x } => todo!(),
+            Operation::OpFx55 { register_x } => todo!(),
+            Operation::OpFx65 { register_x } => todo!(),
         }
     }
 }
@@ -136,7 +139,7 @@ pub fn parse_instruction(instruction: u16) -> Instruction {
 
     if instruction == 0x00E0 {}
 
-    let operation: OpCodes = match instruction & FIRST_DIGIT_MASK {
+    let operation: Operation = match instruction & FIRST_DIGIT_MASK {
         0x0000 => {
             // match instruction & SECOND_DIGIT_MASK {}
             todo!("handle 0x0___")

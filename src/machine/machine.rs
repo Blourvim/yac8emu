@@ -1,4 +1,8 @@
-use std::io::ErrorKind;
+use std::{io::ErrorKind, u8, usize};
+
+const RAM_SIZE: usize = 4096;
+const RAM_START: usize = 0;
+const SOFT_MIN: usize = 0x200;
 
 pub struct Machine {
     general_purpouse_registers: [u8; 16],
@@ -7,7 +11,8 @@ pub struct Machine {
     index_register: u16,
     sound_timer: u8,
     delay_timer: u8,
-    ram: [u8; 4096],
+    ram: [u8; RAM_SIZE],
+    stack: [u16; 16],
 }
 
 impl Machine {
@@ -40,7 +45,15 @@ impl Machine {
         }
         return Ok(self);
     }
+    pub fn write_to_ram() {}
+    pub fn read_ram(&self, address: u16) -> u8 {
+        return self.ram[usize::from(address)];
+    }
 
+    pub fn update_program_counter(mut self, new_value: u16) -> Self {
+        self.program_counter = new_value;
+        self
+    }
 
     pub fn new() -> Self {
         Self {
@@ -51,6 +64,7 @@ impl Machine {
             sound_timer: 0,
             delay_timer: 0,
             ram: [0; 4096],
+            stack: [0; 16],
         }
     }
 }
