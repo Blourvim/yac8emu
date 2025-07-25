@@ -139,7 +139,21 @@ impl Instruction {
                 .write_to_general_purpouse_registers(0xF,is_carry_value )
             },
             Operation::Op8xy6Shr { register_x } => todo!(),
-            Operation::Op8xy7Sub { register_x, register_y } => todo!(),
+            Operation::Op8xy7Sub { register_x, register_y } => {
+
+                let register_x_value:u8 = machine.read_general_purpouse_registers(usize::from(register_x));
+                let register_y_value:u8 = machine.read_general_purpouse_registers(usize::from(register_y));
+
+                let result = register_y_value.overflowing_sub(register_x_value);
+
+                let is_carry_value = match result.1{
+                    true => {0x00},
+                    false => {0x01}
+                };
+                machine.write_to_general_purpouse_registers(usize::from(register_x), result.0)
+                .write_to_general_purpouse_registers(0xF,is_carry_value )
+
+            },
             Operation::Op8xyeShl { register_x } => todo!(),
             Operation::Op9xy0Sne { register_x, register_y } => todo!(),
             Operation::OpAnnnMovI { address } => todo!(),
