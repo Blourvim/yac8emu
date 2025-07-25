@@ -16,6 +16,19 @@ pub struct Machine {
 }
 
 impl Machine {
+    pub fn read_general_purpouse_registers(&self, index: usize) -> u8 {
+        // TODO add validation for 16 index
+        self.general_purpouse_registers[index]
+    }
+
+    pub fn write_to_general_purpouse_registers(mut self, index: usize, value: u8) -> Self {
+        // TODO add validation for 16 index
+        self.general_purpouse_registers[index] = value;
+        self
+    }
+}
+
+impl Machine {
     pub fn copy_to_ram(
         mut self,
         data: Vec<u8>,

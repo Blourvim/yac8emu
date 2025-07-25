@@ -108,7 +108,22 @@ impl Instruction {
             Operation::Op8xy1Setvx2vxorvy { register_x, register_y } => todo!(),
             Operation::Op8xy2Setvx2vxandvy { register_x, register_y } => todo!(),
             Operation::Op8xy3Setvx2vxxorvy { register_x, register_y } => todo!(),
-            Operation::Op8xy4Add { register_x, register_y } => todo!(),
+            Operation::Op8xy4Add { register_x, register_y } => {
+
+                let register_x_value:u8 = machine.read_general_purpouse_registers(usize::from(register_x));
+                let register_y_value:u8 = machine.read_general_purpouse_registers(usize::from(register_y));
+
+                let result = register_x_value.overflowing_add(register_y_value);
+
+                let is_carry_value = match result.1{
+                    true => {0x01},
+                    false => {0x00}
+                };
+                machine.write_to_general_purpouse_registers(usize::from(register_x), result.0)
+                .write_to_general_purpouse_registers(0xF,is_carry_value )
+
+
+            },
             Operation::Op8xy5Sub { register_x, register_y } => todo!(),
             Operation::Op8xy6Shr { register_x } => todo!(),
             Operation::Op8xy7Sub { register_x, register_y } => todo!(),
