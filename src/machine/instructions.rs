@@ -3,7 +3,7 @@ use std::{u16, u8};
 use super::machine::{self, Machine};
 
 #[rustfmt::skip]
-enum Operation {
+pub enum Operation {
 
     ///	Execute machine language subroutine at address NNN
     Op0nnnSys {address: u16}, 
@@ -94,10 +94,7 @@ impl Instruction {
             Operation::Op0nnnSys { address } => todo!(),
             Operation::Op00e0Cls => todo!(),
             Operation::Op00eeRet => todo!(),
-            Operation::Op1nnnJmp { address } => {
-                machine.update_program_counter(address)
-
-            },
+            Operation::Op1nnnJmp { address } => {todo!()},
             Operation::Op2nnnCall { address } => todo!(),
             Operation::Op3xnnSe { register, value } => todo!(),
             Operation::Op4xnnSne { register, value } => todo!(),
@@ -109,19 +106,6 @@ impl Instruction {
             Operation::Op8xy2Setvx2vxandvy { register_x, register_y } => todo!(),
             Operation::Op8xy3Setvx2vxxorvy { register_x, register_y } => todo!(),
             Operation::Op8xy4Add { register_x, register_y } => {
-
-                let register_x_value:u8 = machine.read_general_purpouse_registers(usize::from(register_x));
-                let register_y_value:u8 = machine.read_general_purpouse_registers(usize::from(register_y));
-
-                let result = register_x_value.overflowing_add(register_y_value);
-
-                let is_carry_value = match result.1{
-                    true => {0x01},
-                    false => {0x00}
-                };
-                machine.write_to_general_purpouse_registers(usize::from(register_x), result.0)
-                .write_to_general_purpouse_registers(0xF,is_carry_value )
-
 
             },
             Operation::Op8xy5Sub { register_x, register_y } => {
@@ -186,6 +170,7 @@ impl Instruction {
         }
     }
 }
+
 pub fn parse_instruction(instruction: u16) -> Instruction {
     const FIRST_DIGIT_MASK: u16 = 0xF000;
     const SECOND_DIGIT_MASK: u16 = 0xFF00;

@@ -22,10 +22,9 @@ impl Machine {
         self.general_purpouse_registers[index]
     }
 
-    pub fn write_to_general_purpouse_registers(mut self, index: usize, value: u8) -> Self {
+    pub fn write_to_general_purpouse_registers(&mut self, index: usize, value: u8) {
         // TODO add validation for 16 index
         self.general_purpouse_registers[index] = value;
-        self
     }
 }
 
@@ -69,9 +68,8 @@ impl Machine {
         return self.ram[usize::from(address)];
     }
 
-    pub fn update_program_counter(mut self, new_value: u16) -> Self {
+    pub fn update_program_counter(&mut self, new_value: u16) {
         self.program_counter = new_value;
-        self
     }
 
     pub fn new() -> Self {
