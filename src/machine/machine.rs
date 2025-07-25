@@ -4,6 +4,7 @@ const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
 const SOFT_MIN: usize = 0x200;
 
+#[derive(Clone)]
 pub struct Machine {
     general_purpouse_registers: [u8; 16],
     program_counter: u16,
@@ -28,6 +29,11 @@ impl Machine {
     }
 }
 
+impl Machine {
+    pub fn read_index_register(&self) -> u16 {
+        self.index_register
+    }
+}
 impl Machine {
     pub fn copy_to_ram(
         mut self,

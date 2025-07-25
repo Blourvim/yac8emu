@@ -89,7 +89,7 @@ impl Instruction {
 
 #[rustfmt::skip]
 impl Instruction {
-    fn execute(&self,machine:Machine) ->Machine {
+    fn execute(&self,machine:&mut Machine) ->Machine {
         match self.operation {
             Operation::Op0nnnSys { address } => todo!(),
             Operation::Op00e0Cls => todo!(),
@@ -170,7 +170,19 @@ impl Instruction {
             Operation::OpFx29 { register_x } => todo!(),
             Operation::OpFx33 { register_x } => todo!(),
             Operation::OpFx55 { register_x } => todo!(),
-            Operation::OpFx65 { register_x } => todo!(),
+            Operation::OpFx65 { register_x } => {
+                let index_register_value = machine.read_index_register();
+                let mut new_machine = machine.clone();
+                for i in 0..=register_x{
+                    let value = machine.read_ram(index_register_value+u16::from(i));
+                    new_machine =machine.clone().write_to_general_purpouse_registers(usize::from(i), value);
+                    
+                };
+                new_machine
+
+
+
+            }
         }
     }
 }
