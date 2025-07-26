@@ -73,7 +73,10 @@ impl Machine {
     }
 
     /// Set VX to VX AND VY
-    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {
+
+
+    }
 
     /// Set VX to VX XOR VY
     pub fn op_8xy3_setvx2vxxorvy(&mut self, register_x: u8, register_y: u8) {}
@@ -107,7 +110,11 @@ impl Machine {
     pub fn op_9xy0_sne(&mut self, register_x: u8, register_y: u8) {}
 
     /// Store memory address NNN in register I
-    pub fn op_annn_movi(&mut self, address: u16) {}
+    pub fn op_annn_movi(&mut self, address: u16) {
+
+        self.write_to_index_register(address);
+
+    }
 
     /// Jump to address NNN + V0
     pub fn op_bnnn_jmp_plus_v0(&mut self, value_nnn: u16) {
