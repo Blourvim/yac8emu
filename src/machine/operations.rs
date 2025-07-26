@@ -46,16 +46,31 @@ impl Machine {
     }
 
     /// Store number NN in register VX
-    pub fn op_6xnn_mov(&mut self, register_x: u8, number: u8) {}
+    pub fn op_6xnn_mov(&mut self, register_x: u8, value: u8) {
+        self.write_to_general_purpouse_registers(register_x as usize, value);
+    }
 
     /// Add the value NN to register VX
-    pub fn op_7xnn_add(&mut self, register_x: u8, number: u8) {}
+    pub fn op_7xnn_add(&mut self, register_x: u8, value: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+
+        let result = register_x_value + value;
+        self.write_to_general_purpouse_registers(register_x as usize, result);
+    }
 
     /// Store the value of register VY in register VX
-    pub fn op_8xy0_ymovx(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy0_ymovx(&mut self, register_x: u8, register_y: u8) {
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        self.write_to_general_purpouse_registers(register_x as usize, register_y_value);
+    }
 
     /// Set VX to VX OR VY
-    pub fn op_8xy1_setvx2vxorvy(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy1_setvx2vxorvy(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        let or_operation_result = register_y_value | register_x_value;
+        self.write_to_general_purpouse_registers(register_x as usize, or_operation_result);
+    }
 
     /// Set VX to VX AND VY
     pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {}
