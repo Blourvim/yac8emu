@@ -129,7 +129,7 @@ impl Machine {
     pub fn op_fx1e_mov_vi(&mut self, register_x: u8) {
         let register_x_value = self.read_general_purpouse_registers(register_x as usize);
         let register_i_value = self.read_index_register();
-        self.write_to_index_register(register_x_value as u16 + register_x_value as u16);
+        self.write_to_index_register(register_i_value + register_x_value as u16);
     }
 
     /// Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
