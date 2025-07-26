@@ -91,7 +91,13 @@ impl Machine {
     /// Store the value of register VY shifted right one bit in register VX
     /// Set register VF to the least significant bit prior to the shift
     /// VY is unchanged
-    pub fn op_8xy6_shr(&mut self, register_x: u8) {}
+    pub fn op_8xy6_shr(&mut self, register_y: u8, register_x: u8) {
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        let least_significant_bit = register_y_value & 1;
+        self.write_to_general_purpouse_registers(0xF, least_significant_bit);
+        let shifted_value = register_y_value.rotate_right(1);
+        self.write_to_general_purpouse_registers(register_x as usize, shifted_value);
+    }
 
     /// Set register VX to the value of VY minus VX
     /// Set VF to 00 if a borrow occurs
