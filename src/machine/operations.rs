@@ -73,10 +73,7 @@ impl Machine {
     }
 
     /// Set VX to VX AND VY
-    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {
-
-
-    }
+    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {}
 
     /// Set VX to VX XOR VY
     pub fn op_8xy3_setvx2vxxorvy(&mut self, register_x: u8, register_y: u8) {}
@@ -107,13 +104,17 @@ impl Machine {
     pub fn op_8xye_shl(&mut self, register_x: u8) {}
 
     /// Skip the following instruction if the value of register VX is not equal to the value of register VY
-    pub fn op_9xy0_sne(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_9xy0_sne(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        if register_x_value != register_y_value {
+            self.increment_program_counter(2);
+        }
+    }
 
     /// Store memory address NNN in register I
     pub fn op_annn_movi(&mut self, address: u16) {
-
         self.write_to_index_register(address);
-
     }
 
     /// Jump to address NNN + V0
