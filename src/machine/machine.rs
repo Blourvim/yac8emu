@@ -1,4 +1,4 @@
-use std::{io::ErrorKind, u8, usize};
+use std::{io::ErrorKind, u16, u8, usize};
 
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
@@ -59,6 +59,18 @@ impl Machine {
 
     pub fn write_to_index_register(&mut self, value: u16) {
         self.index_register = value;
+    }
+}
+
+impl Machine {
+    pub fn read_program_counter(&self) -> u16 {
+        self.index_register
+    }
+    pub fn write_to_program_counter(&mut self, value: u16) {
+        self.index_register = value;
+    }
+    pub fn increment_program_counter(&mut self, value: u16) {
+        self.index_register = self.index_register + value
     }
 }
 impl Machine {

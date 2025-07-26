@@ -13,7 +13,9 @@ impl Machine {
     pub fn op_00ee_ret(&mut self) {}
 
     /// Jump to address NNN
-    pub fn op_1nnn_jmp(&mut self, address: u16) {}
+    pub fn op_1nnn_jmp(&mut self, address: u16) {
+        self.write_to_program_counter(address);
+    }
 
     /// Execute subroutine starting at address NNN
     pub fn op_2nnn_call(&mut self, address: u16) {}
