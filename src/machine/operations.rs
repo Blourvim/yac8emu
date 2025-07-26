@@ -21,13 +21,29 @@ impl Machine {
     pub fn op_2nnn_call(&mut self, address: u16) {}
 
     /// Skip the following instruction if the value of register VX equals NN
-    pub fn op_3xnn_se(&mut self, register: u8, value: u8) {}
+    pub fn op_3xnn_se(&mut self, register_x: u8, value: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        if register_x_value == value {
+            self.increment_program_counter(2);
+        }
+    }
 
     /// Skip the following instruction if the value of register VX is not equal to NN
-    pub fn op_4xnn_sne(&mut self, register: u8, value: u8) {}
+    pub fn op_4xnn_sne(&mut self, register_x: u8, value: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        if register_x_value != value {
+            self.increment_program_counter(2);
+        }
+    }
 
     /// Skip the following instruction if the value of register VX is equal to the value of register VY
-    pub fn op_5xy0_se(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_5xy0_se(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        if register_x_value != register_y_value {
+            self.increment_program_counter(2);
+        }
+    }
 
     /// Store number NN in register VX
     pub fn op_6xnn_mov(&mut self, register_x: u8, number: u8) {}
