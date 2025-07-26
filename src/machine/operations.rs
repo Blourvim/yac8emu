@@ -96,11 +96,7 @@ impl Machine {
 
     /// Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
     /// Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
-    pub fn op_dxyn_drw(&mut self, register_x: u8, register_y: u8, height: u8) {
-
-
-
-    }
+    pub fn op_dxyn_drw(&mut self, register_x: u8, register_y: u8, height: u8) {}
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
     pub fn op_ex9e_skprs(&mut self, register_x: u8) {}
@@ -109,19 +105,32 @@ impl Machine {
     pub fn op_exa1_sknprs(&mut self, register_x: u8) {}
 
     /// Store the current value of the delay timer in register VX
-    pub fn op_fx07_mov_dt(&mut self, register_x: u8) {}
+    pub fn op_fx07_mov_dt(&mut self, register_x: u8) {
+        let delay_timer_value = self.read_delay_timer();
+        self.write_to_general_purpouse_registers(register_x as usize, delay_timer_value);
+    }
 
     /// Wait for a keypress and store the result in register VX
     pub fn op_fx0a_wait_key(&mut self, register_x: u8) {}
 
     /// Set the delay timer to the value of register VX
-    pub fn op_fx15_set_dly(&mut self, register_x: u8) {}
+    pub fn op_fx15_set_dly(&mut self, register_x: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        self.write_to_delay_timer(register_x_value);
+    }
 
     /// Set the sound timer to the value of register VX
-    pub fn op_fx18_set_st(&mut self, register_x: u8) {}
+    pub fn op_fx18_set_st(&mut self, register_x: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        self.write_to_sound_timer(register_x_value);
+    }
 
     /// Add the value stored in register VX to register I
-    pub fn op_fx1e_mov_vi(&mut self, register_x: u8) {}
+    pub fn op_fx1e_mov_vi(&mut self, register_x: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_i_value = self.read_index_register();
+        self.write_to_index_register(register_x_value as u16 + register_x_value as u16);
+    }
 
     /// Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
     pub fn op_fx29(&mut self, register_x: u8) {}

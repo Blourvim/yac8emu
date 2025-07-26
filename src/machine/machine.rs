@@ -29,8 +29,36 @@ impl Machine {
 }
 
 impl Machine {
+    pub fn read_delay_timer(&self) -> u8 {
+        // TODO add validation for 16 index
+        self.delay_timer
+    }
+
+    pub fn write_to_delay_timer(&mut self, value: u8) {
+        // TODO add validation for 16 index
+        self.delay_timer = value;
+    }
+}
+
+impl Machine {
+    pub fn read_sound_timer(&self) -> u8 {
+        // TODO add validation for 16 index
+        self.delay_timer
+    }
+
+    pub fn write_to_sound_timer(&mut self, value: u8) {
+        // TODO add validation for 16 index
+        self.delay_timer = value;
+    }
+}
+
+impl Machine {
     pub fn read_index_register(&self) -> u16 {
         self.index_register
+    }
+
+    pub fn write_to_index_register(&mut self, value: u16) {
+        self.index_register = value;
     }
 }
 impl Machine {
