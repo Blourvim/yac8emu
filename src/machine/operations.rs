@@ -259,7 +259,20 @@ impl Machine {
 
     /// Store the values of registers V0 to VX inclusive in memory starting at address I
     /// I is set to I + X + 1 after operation²
-    pub fn op_fx55(&mut self, register_x: u8) {}
+    pub fn op_fx55(&mut self, register_x: u8) {
+        let values: Vec<u8> = (0..=register_x)
+            .map(|register_address| self.read_general_purpouse_registers(register_address as usize))
+            .collect();
+
+        let index_register_value = self.read_index_register();
+
+        self.copy_to_ram(values, index_register_value);
+
+        // this should be just the x value in the instruction, not the value of x register
+        // overflow may happen here, not sure if I need any involvement here but TODO: investigate
+        let new_index_register_value = index_register_value + register_x as u16 + 1;
+        self.write_to_index_register(new_index_register_value);
+    }
 
     /// Fill registers V0 to VX inclusive with the values stored in memory starting at address I
     /// I is set to I + X + 1 after operation²
