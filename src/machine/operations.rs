@@ -1,4 +1,4 @@
-use std::{intrinsics::add_with_overflow, io::Read, u16, usize}; // 0.8.5
+use std::{io::Read, u16, usize}; // 0.8.5
 
 use super::machine::Machine;
 
@@ -116,7 +116,21 @@ impl Machine {
     /// Subtract the value of register VY from register VX
     /// Set VF to 00 if a borrow occurs
     /// Set VF to 01 if a borrow does not occur
-    pub fn op_8xy5_sub(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy5_sub(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+
+        let result = register_y_value.overflowing_sub(register_x_value);
+
+        self.write_to_general_purpouse_registers(register_x as usize, result.0);
+
+        if result.1 {
+            self.write_to_general_purpouse_registers(0xF, 0x00);
+        } else {
+            self.write_to_general_purpouse_registers(0xF, 0x01);
+        }
+    }
 
     /// Store the value of register VY shifted right one bit in register VX
     /// Set register VF to the least significant bit prior to the shift
