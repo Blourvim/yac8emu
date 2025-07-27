@@ -121,7 +121,14 @@ impl Machine {
     /// Store the value of register VY shifted left one bit in register VX
     /// Set register VF to the most significant bit prior to the shift
     /// VY is unchanged
-    pub fn op_8xye_shl(&mut self, register_x: u8) {}
+    pub fn op_8xye_shl(&mut self, register_x: u8, register_y: u8) {
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+
+        let most_significant_bit = (register_y_value >> 8) & 1;
+        let shifted_value = register_y_value.rotate_left(1);
+        self.write_to_general_purpouse_registers(register_x as usize, shifted_value);
+        self.write_to_general_purpouse_registers(0xF, most_significant_bit);
+    }
 
     /// Skip the following instruction if the value of register VX is not equal to the value of register VY
     pub fn op_9xy0_sne(&mut self, register_x: u8, register_y: u8) {
