@@ -73,10 +73,26 @@ impl Machine {
     }
 
     /// Set VX to VX AND VY
-    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy2_setvx2vxandvy(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+
+        let and_operation_result = register_x_value & register_y_value;
+
+        self.write_to_general_purpouse_registers(register_x as usize, and_operation_result);
+    }
 
     /// Set VX to VX XOR VY
-    pub fn op_8xy3_setvx2vxxorvy(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy3_setvx2vxxorvy(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+
+        let xor_operation_result = register_x_value ^ register_y_value;
+
+        self.write_to_general_purpouse_registers(register_x as usize, xor_operation_result);
+    }
 
     /// Add the value of register VY to register VX
     /// Set VF to 01 if a carry occurs
