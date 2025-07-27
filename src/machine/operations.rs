@@ -253,7 +253,6 @@ impl Machine {
             self.write_to_index_register(0x50);
         }
         self.write_to_index_register(0x50 + (register_x_value as u16 * 5));
-
     }
 
     /// Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I + 1, and I + 2
@@ -286,5 +285,17 @@ impl Machine {
 
     /// Fill registers V0 to VX inclusive with the values stored in memory starting at address I
     /// I is set to I + X + 1 after operation²
-    pub fn op_fx65(&mut self, register_x: u8) {}
+    pub fn op_fx65(&mut self, register_x: u8) {
+        let index_register_value = self.read_index_register();
+
+        let values: Vec<u8> = (0..=register_x)
+            .map(|i| self.read_ram(index_register_value + i as u16))
+            .collect();
+
+        values.into_iter().enumerate().for_each(|f| {
+            self.write_to_general_purpouse_registers(f.0, f.1);
+        });
+        let new_index_register_value = index_register_value + register_x as u16 + 1;
+        self.write_to_index_register(new_index_register_value);
+    }
 }
