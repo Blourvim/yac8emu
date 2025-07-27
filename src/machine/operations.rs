@@ -244,7 +244,17 @@ impl Machine {
     }
 
     /// Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
-    pub fn op_fx29(&mut self, register_x: u8) {}
+    pub fn op_fx29(&mut self, register_x: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+
+        //invalid default sprite, only 16 are supported, just send 0 for now,
+        // TODO:: make an invalid box to display
+        if register_x_value > 0xF {
+            self.write_to_index_register(0x50);
+        }
+        self.write_to_index_register(0x50 + (register_x_value as u16 * 5));
+
+    }
 
     /// Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I + 1, and I + 2
     pub fn op_fx33(&mut self, register_x: u8) {
