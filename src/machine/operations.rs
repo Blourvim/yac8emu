@@ -198,7 +198,7 @@ impl Machine {
     pub fn op_cxnn_mov_rand(&mut self, register_x: u8, mask: u8) {
         //TODO: would be fun to add a more deterministic option here
         let mut buf = [0; 16];
-        let random_number = std::fs::File::open("/dev/urandom")
+        std::fs::File::open("/dev/urandom")
             .unwrap()
             .read_exact(&mut buf)
             .unwrap();
@@ -215,7 +215,6 @@ impl Machine {
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is not pressed
     pub fn op_exa1_sknprs(&mut self, register_x: u8) {}
-
     /// Store the current value of the delay timer in register VX
     pub fn op_fx07_mov_dt(&mut self, register_x: u8) {
         let delay_timer_value = self.read_delay_timer();
@@ -247,9 +246,16 @@ impl Machine {
     /// Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
     pub fn op_fx29(&mut self, register_x: u8) {}
 
-    /// Store the binary-coded decimal equivalent of the value stored in register VX
-    /// at addresses I, I + 1, and I + 2
-    pub fn op_fx33(&mut self, register_x: u8) {}
+    /// Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I + 1, and I + 2
+    pub fn op_fx33(&mut self, register_x: u8) {
+        let register_x_value: u8 = self.read_general_purpouse_registers(register_x as usize);
+        let hundred = register_x_value / 100;
+        let ten = (register_x_value - (hundred * 100)) / 10;
+        let one = register_x_value - (hundred * 100) - (ten * 10);
+        let data = vec![hundred, ten, one];
+        let index_register_value = self.read_index_register();
+        self.copy_to_ram(data, index_register_value);
+    }
 
     /// Store the values of registers V0 to VX inclusive in memory starting at address I
     /// I is set to I + X + 1 after operation²

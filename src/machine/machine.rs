@@ -74,11 +74,7 @@ impl Machine {
     }
 }
 impl Machine {
-    pub fn copy_to_ram(
-        mut self,
-        data: Vec<u8>,
-        start_address: u16,
-    ) -> Result<Self, std::io::Error> {
+    pub fn copy_to_ram(&mut self, data: Vec<u8>, start_address: u16) {
         // I  discovered that memory protection was not a thing for chip 8, so I will let them
         // write to the forbidden zone, but i want logs.
         // for out of bounds, the emulator should halt and display an error message
@@ -89,19 +85,9 @@ impl Machine {
             println!("accessing {:?} ", start_address)
         }
 
-        // I should do better error handlingz
-        if usize::from(start_address) + data.len() > usize::from(MAX) {
-            eprintln!("Memory address needed to complete the operation is out of bounds");
-            return Err(std::io::Error::new(
-                ErrorKind::Other,
-                "Invalid start index: not enough memory",
-            ));
-        }
-
         for (i, line) in data.into_iter().enumerate() {
             self.ram[usize::from(start_address) + i] = line
         }
-        return Ok(self);
     }
     pub fn write_to_ram() {}
     pub fn read_ram(&self, address: u16) -> u8 {
