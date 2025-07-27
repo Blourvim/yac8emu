@@ -102,7 +102,21 @@ impl Machine {
     /// Set register VX to the value of VY minus VX
     /// Set VF to 00 if a borrow occurs
     /// Set VF to 01 if a borrow does not occur
-    pub fn op_8xy7_sub(&mut self, register_x: u8, register_y: u8) {}
+    pub fn op_8xy7_sub(&mut self, register_x: u8, register_y: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+
+        let sub_result = register_y_value.overflowing_sub(register_x_value);
+
+        self.write_to_general_purpouse_registers(register_x as usize, register_x_value);
+
+        if sub_result.1 == true {
+            // means a borrow has occured
+            self.write_to_general_purpouse_registers(0xF, 00);
+        } else {
+            self.write_to_general_purpouse_registers(0xF, 01);
+        }
+    }
 
     /// Store the value of register VY shifted left one bit in register VX
     /// Set register VF to the most significant bit prior to the shift
