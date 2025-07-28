@@ -1,4 +1,4 @@
-use std::{io::Read, u16, usize}; // 0.8.5
+use std::{io::Read, ops::Shl, u16, usize}; // 0.8.5
 
 use super::machine::Machine;
 
@@ -211,7 +211,16 @@ impl Machine {
     pub fn op_dxyn_drw(&mut self, register_x: u8, register_y: u8, height: u8) {}
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
-    pub fn op_ex9e_skprs(&mut self, register_x: u8) {}
+    pub fn op_ex9e_skprs(&mut self, register_x: u8) {
+        let pressed_key = self.read_general_purpouse_registers(register_x as usize);
+        const MAX_KEYS: u8 = 16;
+        if pressed_key > MAX_KEYS {
+            // do nothing, unknown key has been pressed
+        } else {
+            let pressed_keys = self.read_pressed_keys();
+            pressed_keys.shl(pressed_key) & 1;
+        }
+    }
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is not pressed
     pub fn op_exa1_sknprs(&mut self, register_x: u8) {}
@@ -297,5 +306,16 @@ impl Machine {
         });
         let new_index_register_value = index_register_value + register_x as u16 + 1;
         self.write_to_index_register(new_index_register_value);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_keys() {
+        let machine = Machine::new();
+
     }
 }
