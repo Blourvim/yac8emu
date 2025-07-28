@@ -1,4 +1,4 @@
-use std::{io::ErrorKind, u16, u8, usize};
+use std::{u16, u8, usize};
 
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
@@ -22,10 +22,14 @@ impl Machine {
     }
 
     // would trigger on key press down
-    pub fn set_pressed_keys(&mut self, pressed_keys: u16) {}
+    pub fn set_pressed_keys(&mut self, pressed_key: u16) {
+        self.pressed_keys[pressed_key as usize] = true;
+    }
 
     // would trigger on key release
-    pub fn unset_pressed_keys(&mut self, pressed_keys: u16) {}
+    pub fn unset_pressed_keys(&mut self, released_key: u16) {
+        self.pressed_keys[released_key as usize] = false;
+    }
 }
 impl Machine {
     pub fn read_general_purpouse_registers(&self, index: usize) -> u8 {
