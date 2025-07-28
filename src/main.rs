@@ -1,12 +1,19 @@
+use std::{thread::sleep, time::Duration};
+
 use machine::rom;
 
 mod machine;
 
 fn main() {
     // init machine
-    let machine = machine::machine::Machine::new();
+    let mut machine = machine::machine::Machine::new();
     // load rom to memory
-    let machine_loaded= rom::Rom::load("./src/roms/rom1", machine);
+    machine = rom::Rom::load("./src/roms/rom1", machine).expect("rom load");
+
+    loop {
+        sleep(Duration::from_millis(1000));
+        machine.exec();
+    }
 
     println!("Hello, world!");
 }

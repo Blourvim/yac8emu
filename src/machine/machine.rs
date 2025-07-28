@@ -1,4 +1,4 @@
-use std::{u16, u8, usize};
+use std::{ops::Shl, u16, u8, usize};
 
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
@@ -15,6 +15,19 @@ pub struct Machine {
     ram: [u8; RAM_SIZE],
     stack: [u16; 16],
     pressed_keys: [bool; 16],
+}
+
+impl Machine {
+    pub fn exec(&mut self) {
+        let instruction1 = self.read_ram(self.program_counter);
+        let instruction2 = self.read_ram(self.program_counter);
+        // merge instructions
+        //
+        let merged_instruction = (instruction1 as u16).shl(4) + instruction2 as u16;
+        // find out which instruction it is, then call the appropriate function
+
+        self.increment_program_counter(2);
+    }
 }
 impl Machine {
     pub fn read_pressed_keys(&self) -> [bool; 16] {
