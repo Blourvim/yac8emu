@@ -105,39 +105,10 @@ impl Instruction {
             Operation::Op8xy1Setvx2vxorvy { register_x, register_y } => todo!(),
             Operation::Op8xy2Setvx2vxandvy { register_x, register_y } => todo!(),
             Operation::Op8xy3Setvx2vxxorvy { register_x, register_y } => todo!(),
-            Operation::Op8xy4Add { register_x, register_y } => {
-
-            },
-            Operation::Op8xy5Sub { register_x, register_y } => {
-
-                let register_x_value:u8 = machine.read_general_purpouse_registers(usize::from(register_x));
-                let register_y_value:u8 = machine.read_general_purpouse_registers(usize::from(register_y));
-
-                let result = register_x_value.overflowing_sub(register_y_value);
-
-                let is_carry_value = match result.1{
-                    true => {0x00},
-                    false => {0x01}
-                };
-                machine.write_to_general_purpouse_registers(usize::from(register_x), result.0)
-                .write_to_general_purpouse_registers(0xF,is_carry_value )
-            },
+            Operation::Op8xy4Add { register_x, register_y } => {todo!()},
+            Operation::Op8xy5Sub { register_x, register_y } => {todo!()},
             Operation::Op8xy6Shr { register_x } => todo!(),
-            Operation::Op8xy7Sub { register_x, register_y } => {
-
-                let register_x_value:u8 = machine.read_general_purpouse_registers(usize::from(register_x));
-                let register_y_value:u8 = machine.read_general_purpouse_registers(usize::from(register_y));
-
-                let result = register_y_value.overflowing_sub(register_x_value);
-
-                let is_carry_value = match result.1{
-                    true => {0x00},
-                    false => {0x01}
-                };
-                machine.write_to_general_purpouse_registers(usize::from(register_x), result.0)
-                .write_to_general_purpouse_registers(0xF,is_carry_value )
-
-            },
+            Operation::Op8xy7Sub { register_x, register_y } => {todo!()},
             Operation::Op8xyeShl { register_x } => todo!(),
             Operation::Op9xy0Sne { register_x, register_y } => todo!(),
             Operation::OpAnnnMovI { address } => todo!(),
@@ -154,19 +125,7 @@ impl Instruction {
             Operation::OpFx29 { register_x } => todo!(),
             Operation::OpFx33 { register_x } => todo!(),
             Operation::OpFx55 { register_x } => todo!(),
-            Operation::OpFx65 { register_x } => {
-                let index_register_value = machine.read_index_register();
-                let mut new_machine = machine.clone();
-                for i in 0..=register_x{
-                    let value = machine.read_ram(index_register_value+u16::from(i));
-                    new_machine =machine.clone().write_to_general_purpouse_registers(usize::from(i), value);
-                    
-                };
-                new_machine
-
-
-
-            }
+            Operation::OpFx65 { register_x } => {todo!()}
         }
     }
 }
