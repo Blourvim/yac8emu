@@ -1,5 +1,7 @@
 use std::{io::Read, ops::Shl, u16, usize}; // 0.8.5
 
+use crate::machine;
+
 use super::machine::Machine;
 
 impl Machine {
@@ -215,13 +217,28 @@ impl Machine {
         let pressed_key = self.read_general_purpouse_registers(register_x as usize);
         const MAX_KEYS: u8 = 16;
         if pressed_key > MAX_KEYS {
-            // do nothing, unknown key has been pressed
+            // do nothing, unknown key is being checked
         } else {
+            let pressed_keys = self.read_pressed_keys();
+            if pressed_keys[pressed_key as usize] == true {
+                self.increment_program_counter(2);
+            }
         }
     }
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is not pressed
-    pub fn op_exa1_sknprs(&mut self, register_x: u8) {}
+    pub fn op_exa1_sknprs(&mut self, register_x: u8) {
+        let pressed_key = self.read_general_purpouse_registers(register_x as usize);
+        const MAX_KEYS: u8 = 16;
+        if pressed_key > MAX_KEYS {
+            // do nothing, unknown key is being checked
+        } else {
+            let pressed_keys = self.read_pressed_keys();
+            if pressed_keys[pressed_key as usize] == false {
+                self.increment_program_counter(2);
+            }
+        }
+    }
     /// Store the current value of the delay timer in register VX
     pub fn op_fx07_mov_dt(&mut self, register_x: u8) {
         let delay_timer_value = self.read_delay_timer();
@@ -306,4 +323,3 @@ impl Machine {
         self.write_to_index_register(new_index_register_value);
     }
 }
-
