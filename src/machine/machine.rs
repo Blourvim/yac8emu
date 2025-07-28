@@ -14,6 +14,9 @@ pub struct Machine {
     delay_timer: u8,
     ram: [u8; RAM_SIZE],
     stack: [u16; 16],
+    //It might be better to use an array here, but It is more in sprit to use single bit for each
+    //key 
+    pressed_keys: u16,
 }
 
 impl Machine {
