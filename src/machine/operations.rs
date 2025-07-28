@@ -1,6 +1,4 @@
-use std::{io::Read, ops::Shl, u16, usize}; // 0.8.5
-
-use crate::machine;
+use std::{io::Read, u16, usize};
 
 use super::machine::Machine;
 
