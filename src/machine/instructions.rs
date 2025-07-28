@@ -1,4 +1,4 @@
-use std::{u16, u8};
+use std::{str::Matches, u16, u8};
 
 use super::machine::{self, Machine};
 
@@ -132,63 +132,25 @@ impl Instruction {
 
 pub fn parse_instruction(instruction: u16) -> Instruction {
     const FIRST_DIGIT_MASK: u16 = 0xF000;
-    const SECOND_DIGIT_MASK: u16 = 0xFF00;
-    const THIRD_DIGIT_MASK: u16 = 0xFFF0;
+    const SECOND_DIGIT_MASK: u16 = 0x0F00;
+    const THIRD_DIGIT_MASK: u16 = 0x00F0;
+    const FOURTH_DIGIT_MASK: u16 = 0x000F;
 
-    if instruction == 0x00E0 {}
+    let first = instruction & FIRST_DIGIT_MASK;
+    let second = instruction & SECOND_DIGIT_MASK;
+    let third = instruction & THIRD_DIGIT_MASK;
+    let fourth = instruction & FOURTH_DIGIT_MASK;
 
-    let operation: Operation = match instruction & FIRST_DIGIT_MASK {
-        0x0000 => {
+    match (first, second, third, fourth) {
+        (0, 0, 0, 0) => {
             // match instruction & SECOND_DIGIT_MASK {}
             todo!("handle 0x0___")
         }
-        0x1000 => {
+        (1, 0, 0, 0) => {
             todo!("handle 0x1___")
         }
-        0x2000 => {
-            todo!("handle 0x2___")
+        (_, _, _, _) => {
+            todo!();
         }
-        0x3000 => {
-            todo!("handle 0x3___")
-        }
-        0x4000 => {
-            todo!("handle 0x4___")
-        }
-        0x5000 => {
-            todo!("handle 0x5___")
-        }
-        0x6000 => {
-            todo!("handle 0x6___")
-        }
-        0x7000 => {
-            todo!("handle 0x7___")
-        }
-        0x8000 => {
-            todo!("handle 0x8___")
-        }
-        0x9000 => {
-            todo!("handle 0x9___")
-        }
-        0xA000 => {
-            todo!("handle 0xA___")
-        }
-        0xB000 => {
-            todo!("handle 0xB___")
-        }
-        0xC000 => {
-            todo!("handle 0xC___")
-        }
-        0xD000 => {
-            todo!("handle 0xD___")
-        }
-        0xE000 => {
-            todo!("handle 0xE___")
-        }
-        0xF000 => {
-            todo!("handle 0xF___")
-        }
-        _ => todo!(),
     };
-
-    Instruction::new(operation, instruction)
 }
