@@ -14,24 +14,18 @@ pub struct Machine {
     delay_timer: u8,
     ram: [u8; RAM_SIZE],
     stack: [u16; 16],
-    //It might be better to use an array here, but It is more in sprit to use single bit for each
-    //key
-    pressed_keys: u16,
+    pressed_keys: [bool; 16],
 }
 impl Machine {
-    pub fn read_pressed_keys(&self) -> u16 {
+    pub fn read_pressed_keys(&self) -> [bool; 16] {
         self.pressed_keys
     }
 
     // would trigger on key press down
-    pub fn set_pressed_keys(&mut self, pressed_keys: u16){
-        self.pressed_keys = self.pressed_keys | pressed_keys
-    }
+    pub fn set_pressed_keys(&mut self, pressed_keys: u16) {}
 
     // would trigger on key release
-    pub fn unset_pressed_keys(&mut self, pressed_keys: u16){
-        self.pressed_keys = self.pressed_keys & pressed_keys
-    }
+    pub fn unset_pressed_keys(&mut self, pressed_keys: u16) {}
 }
 impl Machine {
     pub fn read_general_purpouse_registers(&self, index: usize) -> u8 {
@@ -125,6 +119,7 @@ impl Machine {
             delay_timer: 0,
             ram: [0; 4096],
             stack: [0; 16],
+            pressed_keys: [false; 16],
         }
     }
 }

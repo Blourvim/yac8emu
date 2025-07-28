@@ -217,8 +217,6 @@ impl Machine {
         if pressed_key > MAX_KEYS {
             // do nothing, unknown key has been pressed
         } else {
-            let pressed_keys = self.read_pressed_keys();
-            pressed_keys.shl(pressed_key) & 1;
         }
     }
 
@@ -309,13 +307,3 @@ impl Machine {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_keys() {
-        let machine = Machine::new();
-
-    }
-}
