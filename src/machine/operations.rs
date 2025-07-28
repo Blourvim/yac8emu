@@ -2,10 +2,12 @@ use std::{io::Read, u16, usize};
 
 use super::machine::Machine;
 
+///
+/// updates to the program counter are done with "-2" since machine increments PC by 2 after each
+/// execution for instructions that set their own pc
 impl Machine {
     /// Execute machine language subroutine at address NNN
-    pub fn op_0nnn_sys(&mut self, address: u16) {
-    }
+    pub fn op_0nnn_sys(&mut self, address: u16) {}
 
     /// Clear the screen
     pub fn op_00e0_cls(&mut self) {
@@ -13,15 +15,22 @@ impl Machine {
     }
 
     /// Return from a subroutine
-    pub fn op_00ee_ret(&mut self) {}
+    pub fn op_00ee_ret(&mut self) {
+        let return_address = self.pop_from_stack();
+        self.update_program_counter(return_address - 2);
+    }
 
     /// Jump to address NNN
     pub fn op_1nnn_jmp(&mut self, address: u16) {
-        self.write_to_program_counter(address);
+        self.write_to_program_counter(address - 2);
     }
 
     /// Execute subroutine starting at address NNN
-    pub fn op_2nnn_call(&mut self, address: u16) {}
+    pub fn op_2nnn_call(&mut self, address: u16) {
+        let return_address = self.read_program_counter();
+        self.push_to_stack(return_address);
+        self.update_program_counter(address - 2);
+    }
 
     /// Skip the following instruction if the value of register VX equals NN
     pub fn op_3xnn_se(&mut self, register_x: u8, value: u8) {
@@ -194,7 +203,7 @@ impl Machine {
     /// Jump to address NNN + V0
     pub fn op_bnnn_jmp_plus_v0(&mut self, value_nnn: u16) {
         let register_0_value = self.read_general_purpouse_registers(0);
-        self.update_program_counter(value_nnn + register_0_value as u16);
+        self.update_program_counter(value_nnn + register_0_value as u16 - 2);
     }
 
     /// Set VX to a random number with a mask of NN

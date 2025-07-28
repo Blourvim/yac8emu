@@ -19,7 +19,18 @@ pub struct Machine {
     pressed_keys: [bool; 16],
     pub screen: Screen,
 }
+impl Machine {
+    pub fn push_to_stack(&mut self, value: u16) {
+        self.stack_pointer = self.stack_pointer + 1;
+        self.stack[self.stack_pointer as usize] = value;
+    }
 
+    pub fn pop_from_stack(&mut self) -> u16 {
+        let value = self.stack[self.stack_pointer as usize];
+        self.stack_pointer = self.stack_pointer - 1;
+        value
+    }
+}
 impl Machine {
     pub fn exec(&mut self) {
         let instruction1 = self.read_ram(self.program_counter);
