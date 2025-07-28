@@ -168,7 +168,7 @@ impl Machine {
     pub fn op_8xye_shl(&mut self, register_x: u8, register_y: u8) {
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
 
-        let most_significant_bit = (register_y_value >> 8) & 1;
+        let most_significant_bit = (register_y_value >> 7) & 1;
         let shifted_value = register_y_value.rotate_left(1);
         self.write_to_general_purpouse_registers(register_x as usize, shifted_value);
         self.write_to_general_purpouse_registers(0xF, most_significant_bit);
