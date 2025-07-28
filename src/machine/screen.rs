@@ -1,6 +1,7 @@
 const SCREEN_SIZE: usize = 2048;
 const SCREEN_WIDTH: usize = 64;
 const SCREEN_HEIGHT: usize = 32;
+#[derive(Clone)]
 pub struct Screen {
     // 32x64, should be easier to set it to a continious memory to deal with overflows per line of
     // display

@@ -4,10 +4,13 @@ use super::machine::Machine;
 
 impl Machine {
     /// Execute machine language subroutine at address NNN
-    pub fn op_0nnn_sys(&mut self, address: u16) {}
+    pub fn op_0nnn_sys(&mut self, address: u16) {
+    }
 
     /// Clear the screen
-    pub fn op_00e0_cls(&mut self) {}
+    pub fn op_00e0_cls(&mut self) {
+        self.screen.clear_screen();
+    }
 
     /// Return from a subroutine
     pub fn op_00ee_ret(&mut self) {}

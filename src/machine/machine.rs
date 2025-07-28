@@ -1,5 +1,7 @@
 use std::{ops::Shl, u16, u8, usize};
 
+use super::screen::Screen;
+
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
 const SOFT_MIN: usize = 0x200;
@@ -15,6 +17,7 @@ pub struct Machine {
     ram: [u8; RAM_SIZE],
     stack: [u16; 16],
     pressed_keys: [bool; 16],
+    pub screen: Screen,
 }
 
 impl Machine {
@@ -107,7 +110,6 @@ impl Machine {
         // write to the forbidden zone, but i want logs.
         // for out of bounds, the emulator should halt and display an error message
         const MIN: u16 = 0x200;
-        const MAX: u16 = 1000;
         // after validations
         if start_address < MIN {
             println!("accessing {:?} ", start_address)
@@ -127,6 +129,7 @@ impl Machine {
     }
 
     pub fn new() -> Self {
+        let screen = Screen::new();
         Self {
             general_purpouse_registers: [0; 16],
             program_counter: 0x200, // standard CHIP-8 program start
@@ -137,6 +140,7 @@ impl Machine {
             ram: [0; 4096],
             stack: [0; 16],
             pressed_keys: [false; 16],
+            screen,
         }
     }
 }
