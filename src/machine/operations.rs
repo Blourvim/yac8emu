@@ -231,8 +231,14 @@ impl Machine {
             .map(|f| self.read_ram(index_register_value + f as u16))
             .collect();
 
-        self.screen
-            .update_screen_state(register_x_value, register_y_value, values);
+        let update_screen_state =
+            self.screen
+                .update_screen_state(register_x_value, register_y_value, values);
+        match update_screen_state {
+            true => self.write_to_general_purpouse_registers(0xF, 0x01),
+            false => self.write_to_general_purpouse_registers(0xF, 0x00),
+        }
+
         self.screen.draw();
     }
 
@@ -270,7 +276,24 @@ impl Machine {
     }
 
     /// Wait for a keypress and store the result in register VX
-    pub fn op_fx0a_wait_key(&mut self, register_x: u8) {}
+    pub fn op_fx0a_wait_key(&mut self, register_x: u8) {
+        let keys = self.read_pressed_keys();
+        let mut pressed = false;
+
+        for i in 0..keys.len() {
+            if keys[i] {
+                self.write_to_general_purpouse_registers(register_x as usize, i as u8);
+                pressed = true;
+                break;
+            }
+        }
+
+        if !pressed {
+            // Redo opcode next cycle
+            let program_counter = self.read_program_counter();
+            self.write_to_program_counter(program_counter - 2);
+        }
+    }
 
     /// Set the delay timer to the value of register VX
     pub fn op_fx15_set_dly(&mut self, register_x: u8) {
