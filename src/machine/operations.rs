@@ -7,7 +7,9 @@ use super::machine::Machine;
 /// execution for instructions that set their own pc
 impl Machine {
     /// Execute machine language subroutine at address NNN
-    pub fn op_0nnn_sys(&mut self, address: u16) {}
+    pub fn op_0nnn_sys(&mut self, address: u16) {
+        self.update_program_counter(address - 2);
+    }
 
     /// Clear the screen
     pub fn op_00e0_cls(&mut self) {
@@ -220,7 +222,19 @@ impl Machine {
 
     /// Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
     /// Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
-    pub fn op_dxyn_drw(&mut self, register_x: u8, register_y: u8, height: u8) {}
+    pub fn op_dxyn_drw(&mut self, register_x: u8, register_y: u8, n_bytes: u8) {
+        let register_x_value = self.read_general_purpouse_registers(register_x as usize);
+        let register_y_value = self.read_general_purpouse_registers(register_y as usize);
+        let index_register_value = self.read_index_register();
+
+        let values: Vec<u8> = (0..=n_bytes)
+            .map(|f| self.read_ram(index_register_value + f as u16))
+            .collect();
+
+        self.screen
+            .update_screen_state(register_x_value, register_y_value, values);
+        self.screen.draw();
+    }
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
     pub fn op_ex9e_skprs(&mut self, register_x: u8) {
