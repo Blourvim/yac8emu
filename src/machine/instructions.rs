@@ -130,27 +130,110 @@ impl Instruction {
     }
 }
 
-pub fn parse_instruction(instruction: u16) -> Instruction {
+#[rustfmt::skip]
+pub fn parse_instruction(instruction: u16) -> Operation {
     const FIRST_DIGIT_MASK: u16 = 0xF000;
     const SECOND_DIGIT_MASK: u16 = 0x0F00;
     const THIRD_DIGIT_MASK: u16 = 0x00F0;
     const FOURTH_DIGIT_MASK: u16 = 0x000F;
 
-    let first = instruction & FIRST_DIGIT_MASK;
-    let second = instruction & SECOND_DIGIT_MASK;
-    let third = instruction & THIRD_DIGIT_MASK;
-    let fourth = instruction & FOURTH_DIGIT_MASK;
+    let o_first = instruction & FIRST_DIGIT_MASK;
+    let o_second = instruction & SECOND_DIGIT_MASK;
+    let o_third = instruction & THIRD_DIGIT_MASK;
+    let o_fourth = instruction & FOURTH_DIGIT_MASK;
+
+    let first:u8 = o_first.try_into().unwrap();
+    let second:u8 = o_second.try_into().unwrap();
+    let third:u8 =  o_third.try_into().unwrap();
+    let fourth:u8 = o_fourth.try_into().unwrap();
+
+
 
     match (first, second, third, fourth) {
-        (0, 0, 0, 0) => {
-            // match instruction & SECOND_DIGIT_MASK {}
-            todo!("handle 0x0___")
-        }
-        (1, 0, 0, 0) => {
-            todo!("handle 0x1___")
-        }
-        (_, _, _, _) => {
-            todo!();
-        }
-    };
+        (0x0, 0x0, 0xE, 0x0) => Operation::Op00e0Cls,
+        (0x0, 0x0, 0xE, 0xE) => Operation::Op00eeRet,
+        (0x1, _, _, _) => Operation::Op1nnnJmp { address: instruction & 0x0FFF },
+        (0x2, _, _, _) => Operation::Op2nnnCall { address: instruction & 0x0FFF },
+        (0x3, x, _, _) => Operation::Op3xnnSe {
+            register: x,
+            value: (instruction & 0x00FF) as u8,
+        },
+        (0x4, x, _, _) => Operation::Op4xnnSne {
+            register: x,
+            value: (instruction & 0x00FF) as u8,
+        },
+        (0x5, x, y, 0x0) => Operation::Op5xy0Se {
+            register_x: x,
+            register_y: y,
+        },
+        (0x6, x, _, _) => Operation::Op6xnnMov {
+            register_x: x,
+            number: (instruction & 0x00FF) as u8,
+        },
+        (0x7, x, _, _) => Operation::Op7xnnAdd {
+            register_x: x,
+            number: (instruction & 0x00FF) as u8,
+        },
+        (0x8, x, y, 0x0) => Operation::Op8xy0Ymovx {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, y, 0x1) => Operation::Op8xy1Setvx2vxorvy {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, y, 0x2) => Operation::Op8xy2Setvx2vxandvy {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, y, 0x3) => Operation::Op8xy3Setvx2vxxorvy {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, y, 0x4) => Operation::Op8xy4Add {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, y, 0x5) => Operation::Op8xy5Sub {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, _, 0x6) => Operation::Op8xy6Shr { register_x: x },
+        (0x8, x, y, 0x7) => Operation::Op8xy7Sub {
+            register_x: x,
+            register_y: y,
+        },
+        (0x8, x, _, 0xE) => Operation::Op8xyeShl { register_x: x },
+        (0x9, x, y, 0x0) => Operation::Op9xy0Sne {
+            register_x: x,
+            register_y: y,
+        },
+        (0xA, _, _, _) => Operation::OpAnnnMovI {
+            address: instruction & 0x0FFF,
+        },
+        (0xB, _, _, _) => Operation::OpBnnnJmpPlusV0 {
+            value_nnn: instruction & 0x0FFF,
+        },
+        (0xC, x, _, _) => Operation::OpCxnnMovRand {
+            register_x: x,
+            mask: (instruction & 0x00FF) as u8,
+        },
+        (0xD, x, y, n) => Operation::OpDxynDrw {
+            register_x: x,
+            register_y: y,
+            height: n,
+        },
+        (0xE, x, 0x9, 0xE) => Operation::OpEx9eSkprs { register_x: x },
+        (0xE, x, 0xA, 0x1) => Operation::OpExa1Sknprs { register_x: x },
+        (0xF, x, 0x0, 0x7) => Operation::OpFx07MovDt { register_x: x },
+        (0xF, x, 0x0, 0xA) => Operation::OpFx0aWaitKey { register_x: x },
+        (0xF, x, 0x1, 0x5) => Operation::OpFx15SetDly { register_x: x },
+        (0xF, x, 0x1, 0x8) => Operation::OpFx18SetSt { register_x: x },
+        (0xF, x, 0x1, 0xE) => Operation::OpFx1eMovVi { register_x: x },
+        (0xF, x, 0x2, 0x9) => Operation::OpFx29 { register_x: x },
+        (0xF, x, 0x3, 0x3) => Operation::OpFx33 { register_x: x },
+        (0xF, x, 0x5, 0x5) => Operation::OpFx55 { register_x: x },
+        (0xF, x, 0x6, 0x5) => Operation::OpFx65 { register_x: x },
+        _ => panic!("Unknown instruction: {:04x}", instruction),
+    }
 }
