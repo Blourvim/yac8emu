@@ -40,20 +40,20 @@ pub struct Machine {
 }
 impl Machine {
     pub fn push_to_stack(&mut self, value: u16) {
-        self.stack_pointer = self.stack_pointer + 1;
+        self.stack_pointer = self.stack_pointer.overflowing_add(1).0;
         self.stack[self.stack_pointer as usize] = value;
     }
 
     pub fn pop_from_stack(&mut self) -> u16 {
         let value = self.stack[self.stack_pointer as usize];
-        self.stack_pointer = self.stack_pointer - 1;
+        self.stack_pointer = self.stack_pointer.overflowing_sub(1).0;
         value
     }
 }
 impl Machine {
     pub fn exec(&mut self) {
         let instruction1 = self.read_ram(self.program_counter);
-        let instruction2 = self.read_ram(self.program_counter + 1);
+        let instruction2 = self.read_ram(self.program_counter.overflowing_add(1).0);
         let merged_instruction = ((instruction1 as u16) << 8) | (instruction2 as u16);
 
         parse_instruction(merged_instruction, self);
@@ -129,7 +129,7 @@ impl Machine {
         self.program_counter = value;
     }
     pub fn increment_program_counter(&mut self, value: u16) {
-        self.program_counter = self.program_counter + value
+        self.program_counter = self.program_counter.overflowing_add(value).0
     }
 }
 impl Machine {
