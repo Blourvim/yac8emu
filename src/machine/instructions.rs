@@ -182,6 +182,6 @@ let fourth: u8 = (instruction & 0x000F) as u8;
     (0xF, x, 0x3, 0x3) => machine.op_fx33(x),
     (0xF, x, 0x5, 0x5) => machine.op_fx55(x),
     (0xF, x, 0x6, 0x5) => machine.op_fx65(x),
-    _ => panic!("Unknown instruction: {:04x}", instruction),
+    _ => machine.increment_program_counter(0),
     }
 }

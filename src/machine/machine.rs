@@ -126,10 +126,10 @@ impl Machine {
         self.program_counter
     }
     pub fn write_to_program_counter(&mut self, value: u16) {
-        self.program_counter= value;
+        self.program_counter = value;
     }
     pub fn increment_program_counter(&mut self, value: u16) {
-        self.program_counter= self.index_register + value
+        self.program_counter = self.program_counter + value
     }
 }
 impl Machine {
