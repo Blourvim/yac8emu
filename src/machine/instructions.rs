@@ -131,7 +131,7 @@ impl Instruction {
 }
 
 #[rustfmt::skip]
-pub fn parse_instruction(instruction: u16) -> Operation {
+pub fn parse_instruction(instruction: u16, machine: &mut Machine) {
     const FIRST_DIGIT_MASK: u16 = 0xF000;
     const SECOND_DIGIT_MASK: u16 = 0x0F00;
     const THIRD_DIGIT_MASK: u16 = 0x00F0;
@@ -147,93 +147,41 @@ pub fn parse_instruction(instruction: u16) -> Operation {
     let third:u8 =  o_third.try_into().unwrap();
     let fourth:u8 = o_fourth.try_into().unwrap();
 
-
-
     match (first, second, third, fourth) {
-        (0x0, 0x0, 0xE, 0x0) => Operation::Op00e0Cls,
-        (0x0, 0x0, 0xE, 0xE) => Operation::Op00eeRet,
-        (0x1, _, _, _) => Operation::Op1nnnJmp { address: instruction & 0x0FFF },
-        (0x2, _, _, _) => Operation::Op2nnnCall { address: instruction & 0x0FFF },
-        (0x3, x, _, _) => Operation::Op3xnnSe {
-            register: x,
-            value: (instruction & 0x00FF) as u8,
-        },
-        (0x4, x, _, _) => Operation::Op4xnnSne {
-            register: x,
-            value: (instruction & 0x00FF) as u8,
-        },
-        (0x5, x, y, 0x0) => Operation::Op5xy0Se {
-            register_x: x,
-            register_y: y,
-        },
-        (0x6, x, _, _) => Operation::Op6xnnMov {
-            register_x: x,
-            number: (instruction & 0x00FF) as u8,
-        },
-        (0x7, x, _, _) => Operation::Op7xnnAdd {
-            register_x: x,
-            number: (instruction & 0x00FF) as u8,
-        },
-        (0x8, x, y, 0x0) => Operation::Op8xy0Ymovx {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, y, 0x1) => Operation::Op8xy1Setvx2vxorvy {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, y, 0x2) => Operation::Op8xy2Setvx2vxandvy {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, y, 0x3) => Operation::Op8xy3Setvx2vxxorvy {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, y, 0x4) => Operation::Op8xy4Add {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, y, 0x5) => Operation::Op8xy5Sub {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, _, 0x6) => Operation::Op8xy6Shr { register_x: x },
-        (0x8, x, y, 0x7) => Operation::Op8xy7Sub {
-            register_x: x,
-            register_y: y,
-        },
-        (0x8, x, _, 0xE) => Operation::Op8xyeShl { register_x: x },
-        (0x9, x, y, 0x0) => Operation::Op9xy0Sne {
-            register_x: x,
-            register_y: y,
-        },
-        (0xA, _, _, _) => Operation::OpAnnnMovI {
-            address: instruction & 0x0FFF,
-        },
-        (0xB, _, _, _) => Operation::OpBnnnJmpPlusV0 {
-            value_nnn: instruction & 0x0FFF,
-        },
-        (0xC, x, _, _) => Operation::OpCxnnMovRand {
-            register_x: x,
-            mask: (instruction & 0x00FF) as u8,
-        },
-        (0xD, x, y, n) => Operation::OpDxynDrw {
-            register_x: x,
-            register_y: y,
-            height: n,
-        },
-        (0xE, x, 0x9, 0xE) => Operation::OpEx9eSkprs { register_x: x },
-        (0xE, x, 0xA, 0x1) => Operation::OpExa1Sknprs { register_x: x },
-        (0xF, x, 0x0, 0x7) => Operation::OpFx07MovDt { register_x: x },
-        (0xF, x, 0x0, 0xA) => Operation::OpFx0aWaitKey { register_x: x },
-        (0xF, x, 0x1, 0x5) => Operation::OpFx15SetDly { register_x: x },
-        (0xF, x, 0x1, 0x8) => Operation::OpFx18SetSt { register_x: x },
-        (0xF, x, 0x1, 0xE) => Operation::OpFx1eMovVi { register_x: x },
-        (0xF, x, 0x2, 0x9) => Operation::OpFx29 { register_x: x },
-        (0xF, x, 0x3, 0x3) => Operation::OpFx33 { register_x: x },
-        (0xF, x, 0x5, 0x5) => Operation::OpFx55 { register_x: x },
-        (0xF, x, 0x6, 0x5) => Operation::OpFx65 { register_x: x },
-        _ => panic!("Unknown instruction: {:04x}", instruction),
+ (0x0, 0x0, 0xE, 0x0) => machine.op_00e0_cls(),
+    (0x0, 0x0, 0xE, 0xE) => machine.op_00ee_ret(),
+    (0x1, _, _, _) => machine.op_1nnn_jmp((instruction & 0x0FFF) as u16),
+    (0x2, _, _, _) => machine.op_2nnn_call((instruction & 0x0FFF) as u16),
+    (0x3, x, _, _) => machine.op_3xnn_se(x, (instruction & 0x00FF) as u8),
+    (0x4, x, _, _) => machine.op_4xnn_sne(x, (instruction & 0x00FF) as u8),
+    (0x5, x, y, 0x0) => machine.op_5xy0_se(x, y),
+    (0x6, x, _, _) => machine.op_6xnn_mov(x, (instruction & 0x00FF) as u8),
+    (0x7, x, _, _) => machine.op_7xnn_add(x, (instruction & 0x00FF) as u8),
+    (0x8, x, y, 0x0) => machine.op_8xy0_ymovx(x, y),
+    (0x8, x, y, 0x1) => machine.op_8xy1_setvx2vxorvy(x, y),
+    (0x8, x, y, 0x2) => machine.op_8xy2_setvx2vxandvy(x, y),
+    (0x8, x, y, 0x3) => machine.op_8xy3_setvx2vxxorvy(x, y),
+    (0x8, x, y, 0x4) => machine.op_8xy4_add(x, y),
+    (0x8, x, y, 0x5) => machine.op_8xy5_sub(x, y),
+    (0x8, x, y, 0x6) => machine.op_8xy6_shr(x,y),
+    (0x8, x, y, 0x7) => machine.op_8xy7_sub(x, y),
+    (0x8, x, y, 0xE) => machine.op_8xye_shl(x,y),
+    (0x9, x, y, 0x0) => machine.op_9xy0_sne(x, y),
+    (0xA, _, _, _) => machine.op_annn_movi(instruction & 0x0FFF),
+    (0xB, _, _, _) => machine.op_bnnn_jmp_plus_v0(instruction & 0x0FFF),
+    (0xC, x, _, _) => machine.op_cxnn_mov_rand(x, (instruction & 0x00FF) as u8),
+    (0xD, x, y, n) => machine.op_dxyn_drw(x, y, n),
+    (0xE, x, 0x9, 0xE) => machine.op_ex9e_skprs(x),
+    (0xE, x, 0xA, 0x1) => machine.op_exa1_sknprs(x),
+    (0xF, x, 0x0, 0x7) => machine.op_fx07_mov_dt(x),
+    (0xF, x, 0x0, 0xA) => machine.op_fx0a_wait_key(x),
+    (0xF, x, 0x1, 0x5) => machine.op_fx15_set_dly(x),
+    (0xF, x, 0x1, 0x8) => machine.op_fx18_set_st(x),
+    (0xF, x, 0x1, 0xE) => machine.op_fx1e_mov_vi(x),
+    (0xF, x, 0x2, 0x9) => machine.op_fx29(x),
+    (0xF, x, 0x3, 0x3) => machine.op_fx33(x),
+    (0xF, x, 0x5, 0x5) => machine.op_fx55(x),
+    (0xF, x, 0x6, 0x5) => machine.op_fx65(x),
+    _ => panic!("Unknown instruction: {:04x}", instruction),
     }
 }
