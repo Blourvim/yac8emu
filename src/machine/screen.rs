@@ -1,8 +1,8 @@
 use std::{thread::sleep, time::Duration, u32, usize};
 
-const SCREEN_SIZE: usize = 2048;
 const SCREEN_WIDTH: usize = 64;
 const SCREEN_HEIGHT: usize = 32;
+const SCREEN_SIZE: usize = SCREEN_WIDTH * SCREEN_HEIGHT;
 #[derive(Clone)]
 pub struct Screen {
     // 32x64, should be easier to set it to a continious memory to deal with overflows per line of
@@ -48,7 +48,6 @@ impl Screen {
         return is_flipped;
     }
     pub fn draw(&self) {
-
         // Top border
         print!("╔"); // top-left corner
         for _ in 0..SCREEN_WIDTH {
