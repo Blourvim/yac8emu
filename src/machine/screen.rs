@@ -1,4 +1,3 @@
-use core::panic;
 use std::{thread::sleep, time::Duration, u32, usize};
 
 const SCREEN_SIZE: usize = 2048;
@@ -49,8 +48,6 @@ impl Screen {
         return is_flipped;
     }
     pub fn draw(&self) {
-        const SCREEN_WIDTH: usize = 64;
-        const SCREEN_HEIGHT: usize = 32;
 
         // Top border
         print!("╔"); // top-left corner
