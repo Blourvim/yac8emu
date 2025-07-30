@@ -9,7 +9,7 @@ fn main() {
     let mut machine = machine::machine::Machine::new();
 
     // load rom to memory
-    machine = rom::Rom::load("./src/roms/2-ibm-logo.ch8", machine).expect("rom load");
+    machine = rom::Rom::load("./src/roms/test_opcode.ch8", machine).expect("rom load");
 
     loop {
         sleep(Duration::from_millis(100));

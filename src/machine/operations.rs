@@ -54,7 +54,7 @@ impl Machine {
     pub fn op_5xy0_se(&mut self, register_x: u8, register_y: u8) {
         let register_x_value = self.read_general_purpouse_registers(register_x as usize);
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
-        if register_x_value != register_y_value {
+        if register_x_value == register_y_value {
             self.increment_program_counter(2);
         }
     }
@@ -68,8 +68,8 @@ impl Machine {
     pub fn op_7xnn_add(&mut self, register_x: u8, value: u8) {
         let register_x_value = self.read_general_purpouse_registers(register_x as usize);
 
-        let result = register_x_value + value;
-        self.write_to_general_purpouse_registers(register_x as usize, result);
+        let result = register_x_value.overflowing_add(value);
+        self.write_to_general_purpouse_registers(register_x as usize, result.0);
     }
 
     /// Store the value of register VY in register VX
@@ -234,12 +234,52 @@ impl Machine {
         let update_screen_state =
             self.screen
                 .update_screen_state(register_x_value, register_y_value, values);
+
         match update_screen_state {
             true => self.write_to_general_purpouse_registers(0xF, 0x01),
             false => self.write_to_general_purpouse_registers(0xF, 0x00),
         }
 
         self.screen.draw();
+    }
+
+    pub fn op_dxyn_drw2(&mut self, register_x: u8, register_y: u8, n_bytes: u8) {
+        let x_coord = self.read_general_purpouse_registers(register_x as usize) as u16;
+        let y_coord = self.read_general_purpouse_registers(register_y as usize) as u16;
+        // The last digit determines how many rows high our sprite is
+        let num_rows = n_bytes;
+
+        // Keep track if any pixels were flipped
+        let mut flipped = false;
+        // Iterate over each row of our sprite
+        for y_line in 0..num_rows {
+            // Determine which memory address our row's data is stored
+            let addr = self.read_index_register() + y_line as u16;
+            let pixels = self.read_ram(addr);
+            // Iterate over each column in our row
+            for x_line in 0..8 {
+                // Use a mask to fetch current pixel's bit. Only flip if a 1
+                if (pixels & (0b1000_0000 >> x_line)) != 0 {
+                    // Sprites should wrap around screen, so apply modulo
+                    const SCREEN_WIDTH: usize = 64;
+                    let x = (x_coord + x_line) as usize % SCREEN_WIDTH;
+                    const SCREEN_HEIGHT: usize = 32;
+                    let y = (y_coord + y_line as u16) as usize % SCREEN_HEIGHT;
+
+                    // Get our pixel's index in the 1D screen array
+                    let idx = x + SCREEN_WIDTH * y;
+                    // Check if we're about to flip the pixel and set
+                    flipped |= self.screen.display[idx];
+                    self.screen.display[idx] ^= true;
+                }
+            }
+        }
+        // Populate VF register
+        if flipped {
+            self.write_to_general_purpouse_registers(0xF, 1);
+        } else {
+            self.write_to_general_purpouse_registers(0xF, 0);
+        }
     }
 
     /// Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
