@@ -50,6 +50,7 @@ impl Screen {
         return is_flipped;
     }
     pub fn draw(&self) {
+        // println!("{:?}", self.display);
         for height in 0..SCREEN_HEIGHT {
             print!("||");
             for width in 0..SCREEN_WIDTH {

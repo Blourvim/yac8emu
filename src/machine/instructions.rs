@@ -142,10 +142,10 @@ pub fn parse_instruction(instruction: u16, machine: &mut Machine) {
     let o_third = instruction & THIRD_DIGIT_MASK;
     let o_fourth = instruction & FOURTH_DIGIT_MASK;
 
-    let first:u8 = o_first.try_into().unwrap();
-    let second:u8 = o_second.try_into().unwrap();
-    let third:u8 =  o_third.try_into().unwrap();
-    let fourth:u8 = o_fourth.try_into().unwrap();
+let first: u8  = ((instruction & 0xF000) >> 12) as u8;
+let second: u8 = ((instruction & 0x0F00) >> 8) as u8;
+let third: u8  = ((instruction & 0x00F0) >> 4) as u8;
+let fourth: u8 = (instruction & 0x000F) as u8;
 
     match (first, second, third, fourth) {
  (0x0, 0x0, 0xE, 0x0) => machine.op_00e0_cls(),

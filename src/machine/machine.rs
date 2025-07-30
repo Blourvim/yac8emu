@@ -1,10 +1,29 @@
 use std::{ops::Shl, u16, u8, usize};
 
-use super::screen::Screen;
+use super::{instructions::parse_instruction, screen::Screen};
 
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
 const SOFT_MIN: usize = 0x200;
+const FONTSET_SIZE: usize = 80;
+const FONTSET: [u8; FONTSET_SIZE] = [
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+];
 
 #[derive(Clone)]
 pub struct Machine {
@@ -34,12 +53,10 @@ impl Machine {
 impl Machine {
     pub fn exec(&mut self) {
         let instruction1 = self.read_ram(self.program_counter);
-        let instruction2 = self.read_ram(self.program_counter);
-        // merge instructions
-        //
-        let merged_instruction = (instruction1 as u16).shl(4) + instruction2 as u16;
-        // find out which instruction it is, then call the appropriate function
+        let instruction2 = self.read_ram(self.program_counter + 1);
+        let merged_instruction = ((instruction1 as u16) << 8) | (instruction2 as u16);
 
+        parse_instruction(merged_instruction, self);
         self.increment_program_counter(2);
     }
 }
@@ -106,13 +123,13 @@ impl Machine {
 
 impl Machine {
     pub fn read_program_counter(&self) -> u16 {
-        self.index_register
+        self.program_counter
     }
     pub fn write_to_program_counter(&mut self, value: u16) {
-        self.index_register = value;
+        self.program_counter= value;
     }
     pub fn increment_program_counter(&mut self, value: u16) {
-        self.index_register = self.index_register + value
+        self.program_counter= self.index_register + value
     }
 }
 impl Machine {
@@ -141,7 +158,7 @@ impl Machine {
 
     pub fn new() -> Self {
         let screen = Screen::new();
-        Self {
+        let mut machine = Self {
             general_purpouse_registers: [0; 16],
             program_counter: 0x200, // standard CHIP-8 program start
             stack_pointer: 0,
@@ -152,6 +169,10 @@ impl Machine {
             stack: [0; 16],
             pressed_keys: [false; 16],
             screen,
-        }
+        };
+
+        let fontset: Vec<u8> = FONTSET.try_into().expect("convert fontset to vec");
+        machine.copy_to_ram(fontset, 0x50);
+        machine
     }
 }
