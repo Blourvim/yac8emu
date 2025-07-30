@@ -8,7 +8,7 @@ use super::machine::Machine;
 impl Machine {
     /// Execute machine language subroutine at address NNN
     pub fn op_0nnn_sys(&mut self, address: u16) {
-        self.update_program_counter(address);
+        self.update_program_counter(address -2 );
     }
 
     /// Clear the screen
@@ -24,14 +24,14 @@ impl Machine {
 
     /// Jump to address NNN
     pub fn op_1nnn_jmp(&mut self, address: u16) {
-        self.write_to_program_counter(address -2);
+        self.write_to_program_counter(address);
     }
 
     /// Execute subroutine starting at address NNN
     pub fn op_2nnn_call(&mut self, address: u16) {
         let return_address = self.read_program_counter();
         self.push_to_stack(return_address);
-        self.update_program_counter(address);
+        self.update_program_counter(address -2);
     }
 
     /// Skip the following instruction if the value of register VX equals NN
