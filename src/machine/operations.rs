@@ -8,7 +8,7 @@ use super::machine::Machine;
 impl Machine {
     /// Execute machine language subroutine at address NNN
     pub fn op_0nnn_sys(&mut self, address: u16) {
-        self.update_program_counter(address - 2);
+        self.update_program_counter(address);
     }
 
     /// Clear the screen
@@ -19,19 +19,19 @@ impl Machine {
     /// Return from a subroutine
     pub fn op_00ee_ret(&mut self) {
         let return_address = self.pop_from_stack();
-        self.update_program_counter(return_address - 2);
+        self.update_program_counter(return_address);
     }
 
     /// Jump to address NNN
     pub fn op_1nnn_jmp(&mut self, address: u16) {
-        self.write_to_program_counter(address - 2);
+        self.write_to_program_counter(address -2);
     }
 
     /// Execute subroutine starting at address NNN
     pub fn op_2nnn_call(&mut self, address: u16) {
         let return_address = self.read_program_counter();
         self.push_to_stack(return_address);
-        self.update_program_counter(address - 2);
+        self.update_program_counter(address);
     }
 
     /// Skip the following instruction if the value of register VX equals NN
@@ -183,7 +183,7 @@ impl Machine {
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
 
         let most_significant_bit = (register_y_value >> 7) & 1;
-        let shifted_value = register_y_value.rotate_left(1);
+        let shifted_value = register_y_value << 1;
         self.write_to_general_purpouse_registers(register_x as usize, shifted_value);
         self.write_to_general_purpouse_registers(0xF, most_significant_bit);
     }
@@ -204,12 +204,14 @@ impl Machine {
 
     /// Jump to address NNN + V0
     pub fn op_bnnn_jmp_plus_v0(&mut self, value_nnn: u16) {
+        // having problems here, nnn is actually supposed to be 12 bits,
         let register_0_value = self.read_general_purpouse_registers(0);
-        self.update_program_counter(
-            value_nnn
-                .overflowing_add((register_0_value as u16).overflowing_sub(2).0)
-                .0,
-        );
+        let mut to_jump = value_nnn + register_0_value as u16;
+
+        if to_jump > 0xFFF {
+            to_jump = to_jump - 0xFFF
+        }
+        self.update_program_counter(to_jump - 2);
     }
 
     /// Set VX to a random number with a mask of NN
@@ -355,7 +357,7 @@ impl Machine {
     pub fn op_fx1e_mov_vi(&mut self, register_x: u8) {
         let register_x_value = self.read_general_purpouse_registers(register_x as usize);
         let register_i_value = self.read_index_register();
-        self.write_to_index_register(register_i_value + register_x_value as u16);
+        self.write_to_index_register(register_i_value.overflowing_add(register_x_value as u16).0);
     }
 
     /// Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
@@ -365,9 +367,11 @@ impl Machine {
         //invalid default sprite, only 16 are supported, just send 0 for now,
         // TODO:: make an invalid box to display
         if register_x_value > 0xF {
+            println!("oh no");
             self.write_to_index_register(0x50);
+        } else {
+            self.write_to_index_register(0x50 + (register_x_value as u16 * 5));
         }
-        self.write_to_index_register(0x50 + (register_x_value as u16 * 5));
     }
 
     /// Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I + 1, and I + 2

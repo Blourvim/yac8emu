@@ -54,6 +54,7 @@ impl Machine {
         let instruction1 = self.read_ram(self.program_counter);
         let instruction2 = self.read_ram(self.program_counter.overflowing_add(1).0);
         let merged_instruction = ((instruction1 as u16) << 8) | (instruction2 as u16);
+        println!("{:#x}", merged_instruction);
 
         parse_instruction(merged_instruction, self);
         self.increment_program_counter(2);
