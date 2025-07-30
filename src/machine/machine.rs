@@ -1,9 +1,8 @@
-use std::{ops::Shl, u16, u8, usize};
+use std::{u16, u8, usize};
 
 use super::{instructions::parse_instruction, screen::Screen};
 
 const RAM_SIZE: usize = 4096;
-const RAM_START: usize = 0;
 const SOFT_MIN: u16 = 0x200;
 const FONTSET_SIZE: usize = 80;
 const FONTSET: [u8; FONTSET_SIZE] = [
@@ -77,36 +76,30 @@ impl Machine {
 }
 impl Machine {
     pub fn read_general_purpouse_registers(&self, index: usize) -> u8 {
-        // TODO add validation for 16 index
         self.general_purpouse_registers[index]
     }
 
     pub fn write_to_general_purpouse_registers(&mut self, index: usize, value: u8) {
-        // TODO add validation for 16 index
         self.general_purpouse_registers[index] = value;
     }
 }
 
 impl Machine {
     pub fn read_delay_timer(&self) -> u8 {
-        // TODO add validation for 16 index
         self.delay_timer
     }
 
     pub fn write_to_delay_timer(&mut self, value: u8) {
-        // TODO add validation for 16 index
         self.delay_timer = value;
     }
 }
 
 impl Machine {
     pub fn read_sound_timer(&self) -> u8 {
-        // TODO add validation for 16 index
         self.sound_timer
     }
 
     pub fn write_to_sound_timer(&mut self, value: u8) {
-        // TODO add validation for 16 index
         self.sound_timer = value;
     }
 }
