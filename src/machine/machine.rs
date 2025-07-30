@@ -4,7 +4,7 @@ use super::{instructions::parse_instruction, screen::Screen};
 
 const RAM_SIZE: usize = 4096;
 const RAM_START: usize = 0;
-const SOFT_MIN: usize = 0x200;
+const SOFT_MIN: u16 = 0x200;
 const FONTSET_SIZE: usize = 80;
 const FONTSET: [u8; FONTSET_SIZE] = [
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -102,12 +102,12 @@ impl Machine {
 impl Machine {
     pub fn read_sound_timer(&self) -> u8 {
         // TODO add validation for 16 index
-        self.delay_timer
+        self.sound_timer
     }
 
     pub fn write_to_sound_timer(&mut self, value: u8) {
         // TODO add validation for 16 index
-        self.delay_timer = value;
+        self.sound_timer = value;
     }
 }
 
@@ -147,7 +147,6 @@ impl Machine {
             self.ram[usize::from(start_address) + i] = line
         }
     }
-    pub fn write_to_ram() {}
     pub fn read_ram(&self, address: u16) -> u8 {
         return self.ram[usize::from(address)];
     }
@@ -160,7 +159,7 @@ impl Machine {
         let screen = Screen::new();
         let mut machine = Self {
             general_purpouse_registers: [0; 16],
-            program_counter: 0x200, // standard CHIP-8 program start
+            program_counter: SOFT_MIN,
             stack_pointer: 0,
             index_register: 0,
             sound_timer: 0,

@@ -1,6 +1,4 @@
-use std::{str::Matches, u16, u8};
-
-use super::machine::{self, Machine};
+use super::machine::Machine;
 
 #[rustfmt::skip]
 pub enum Operation {
@@ -132,20 +130,10 @@ impl Instruction {
 
 #[rustfmt::skip]
 pub fn parse_instruction(instruction: u16, machine: &mut Machine) {
-    const FIRST_DIGIT_MASK: u16 = 0xF000;
-    const SECOND_DIGIT_MASK: u16 = 0x0F00;
-    const THIRD_DIGIT_MASK: u16 = 0x00F0;
-    const FOURTH_DIGIT_MASK: u16 = 0x000F;
-
-    let o_first = instruction & FIRST_DIGIT_MASK;
-    let o_second = instruction & SECOND_DIGIT_MASK;
-    let o_third = instruction & THIRD_DIGIT_MASK;
-    let o_fourth = instruction & FOURTH_DIGIT_MASK;
-
-let first: u8  = ((instruction & 0xF000) >> 12) as u8;
-let second: u8 = ((instruction & 0x0F00) >> 8) as u8;
-let third: u8  = ((instruction & 0x00F0) >> 4) as u8;
-let fourth: u8 = (instruction & 0x000F) as u8;
+    let first: u8  = ((instruction & 0xF000) >> 12) as u8;
+    let second: u8 = ((instruction & 0x0F00) >> 8) as u8;
+    let third: u8  = ((instruction & 0x00F0) >> 4) as u8;
+    let fourth: u8 = (instruction & 0x000F) as u8;
 
     match (first, second, third, fourth) {
  (0x0, 0x0, 0xE, 0x0) => machine.op_00e0_cls(),

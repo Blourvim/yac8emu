@@ -1,6 +1,6 @@
 use std::{thread::sleep, time::Duration};
 
-use machine::{rom, screen::Screen};
+use machine::rom;
 
 mod machine;
 
@@ -9,7 +9,7 @@ fn main() {
     let mut machine = machine::machine::Machine::new();
 
     // load rom to memory
-    machine = rom::Rom::load("./src/roms/test_opcode.ch8", machine).expect("rom load");
+    machine = rom::Rom::load("./src/roms/4-flags.ch8", machine).expect("rom load");
 
     loop {
         sleep(Duration::from_millis(100));

@@ -120,7 +120,7 @@ impl Machine {
 
         self.write_to_general_purpouse_registers(register_x as usize, result.0);
 
-        if result.1 {
+        if result.1 == true {
             self.write_to_general_purpouse_registers(0xF, 0x01);
         } else {
             self.write_to_general_purpouse_registers(0xF, 0x00);
@@ -135,11 +135,11 @@ impl Machine {
 
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
 
-        let result = register_y_value.overflowing_sub(register_x_value);
+        let result = register_x_value.overflowing_sub(register_y_value);
 
         self.write_to_general_purpouse_registers(register_x as usize, result.0);
 
-        if result.1 {
+        if result.1 == true {
             self.write_to_general_purpouse_registers(0xF, 0x00);
         } else {
             self.write_to_general_purpouse_registers(0xF, 0x01);
@@ -153,7 +153,7 @@ impl Machine {
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
         let least_significant_bit = register_y_value & 1;
         self.write_to_general_purpouse_registers(0xF, least_significant_bit);
-        let shifted_value = register_y_value.rotate_right(1);
+        let shifted_value = register_y_value >> 1;
         self.write_to_general_purpouse_registers(register_x as usize, shifted_value);
     }
 
@@ -166,7 +166,7 @@ impl Machine {
 
         let sub_result = register_y_value.overflowing_sub(register_x_value);
 
-        self.write_to_general_purpouse_registers(register_x as usize, register_x_value);
+        self.write_to_general_purpouse_registers(register_x as usize, sub_result.0);
 
         if sub_result.1 == true {
             // means a borrow has occured
@@ -205,7 +205,11 @@ impl Machine {
     /// Jump to address NNN + V0
     pub fn op_bnnn_jmp_plus_v0(&mut self, value_nnn: u16) {
         let register_0_value = self.read_general_purpouse_registers(0);
-        self.update_program_counter(value_nnn + register_0_value as u16 - 2);
+        self.update_program_counter(
+            value_nnn
+                .overflowing_add((register_0_value as u16).overflowing_sub(2).0)
+                .0,
+        );
     }
 
     /// Set VX to a random number with a mask of NN
@@ -227,8 +231,8 @@ impl Machine {
         let register_y_value = self.read_general_purpouse_registers(register_y as usize);
         let index_register_value = self.read_index_register();
 
-        let values: Vec<u8> = (0..=n_bytes)
-            .map(|f| self.read_ram(index_register_value + f as u16))
+        let values: Vec<u8> = (0..n_bytes)
+            .map(|f| self.read_ram(index_register_value.overflowing_add(f as u16).0))
             .collect();
 
         let update_screen_state =
